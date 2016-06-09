@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rdf:RDF
+xmlsn="http://www.example.com/myprimerrdf"
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:dcterms="http://purl.org/dc/terms/"
+xmlns:sioc="http://rdfs.org/sioc/spec/"
+xmlns:myNameSpace="http://www.example.com/myprimerrdf#"
+xml:base="http://www.example.com/myprimerrdf">
+
+<rdfs:Class rdf:about="#User"/>
+<rdfs:Class rdf:about="#Post"/>
+<rdfs:Class rdf:about="#TwitterUser">
+	<rdfs:subClassOf rdf:resource="#User"/> 
+</rdfs:Class>
+
+<rdfs:Class rdf:about="#FacebookUser">
+	<rdfs:subClassOf rdf:resource="#User"/> 
+</rdfs:Class>
+
+<rdfs:Class rdf:about="#Tweet">
+	<rdfs:subClassOf rdf:resource="#Post"/> 
+</rdfs:Class>
+
+<rdfs:Property rdf:about="#Content">
+	<rdfs:domain rdf:resource="#Post"/>
+</rdfs:Property>
+<rdfs:Property rdf:about="#Creator">
+	<rdfs:domain rdf:resource="#Post"/>
+	<rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#TwitterUser"/>
+</rdfs:Property>
+<rdfs:Property rdf:about="#Fecha_creacion">
+	<rdfs:domain rdf:resource="#Post"/>
+</rdfs:Property>
+<rdfs:Property rdf:about="#Likes">
+	<rdfs:domain rdf:resource="#Post"/>
+	<rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+</rdfs:Property>
+<rdfs:Property rdf:about="#Retweets">
+	<rdfs:domain rdf:resource="#Tweet"/>
+	<rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+</rdfs:Property>
+
+<rdfs:Property rdf:about="#UserAccount">
+	<rdfs:domain rdf:resource="#User"/>
+</rdfs:Property>
+
+<rdfs:Property rdf:about="#Followers">
+	<rdfs:domain rdf:resource="#TwitterUser"/>
+	<rdfs:range rdf:resource="#TwitterUser"/>
+</rdfs:Property>
+
+<rdfs:Property rdf:about="#Friends">
+	<rdfs:domain rdf:resource="#FacebookUser"/>
+	<rdfs:range rdf:resource="#FacebookUser"/>
+</rdfs:Property>
+
+
+<TwitterUser rdf:about="http://www.example.com/myprimerrdf#user211">
+	<UserAccount>@pepe</UserAccount>
+</TwitterUser>
+
+<FacebookUser rdf:about="http://www.example.com/myprimerrdf#user201">
+	<UserAccount>er_Antonio</UserAccount>
+</FacebookUser>
+
+<FacebookUser rdf:about="http://www.example.com/myprimerrdf#user202">
+	<UserAccount>pecosa</UserAccount>
+	<Friends>
+		<FacebookUser rdf:about="http://www.example.com/myprimerrdf#user201">
+	</Friends>
+</FacebookUser>
+
+<Tweet rdf:about="http://www.example.com/myprimerrdf#tweet111">
+	<Content>Un tweet de Joaquín Sabina</Content>
+	<Creator>
+		<TwitterUser rdf:about="http://www.example.com/myprimerrdf#user211">
+	</Creator>
+	<Fecha_creacion>12/03/2015</Fecha_creacion>
+</Tweet>
+
+<Post rdf:about="http://www.example.com/myprimerrdf#tweet111">
+	<Content>Un post sobre Joaquin Sabina</Content>
+	<Creator>
+		<TwitterUser rdf:about="http://www.example.com/myprimerrdf#user201">
+	</Creator>
+	<Fecha_creacion>12/02/2015</Fecha_creacion>
+	<Likes>123</Likes>
+</Post>
+
+</rdf:RDF>

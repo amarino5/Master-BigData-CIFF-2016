@@ -11,18 +11,25 @@ xmlsn:="http://www.example.com/myprimerrdf">
 
 <rdfs:Class rdf:about="#User"/>
 <rdfs:Class rdf:about="#Tweet"/>
+<rdfs:Class rdf:about="#TwitterUser">
+	<rdfs:subClassOf rdf:resource="#User"/> 
+</rdfs:Class>
+
+<rdfs:Class rdf:about="#FacebookUser">
+	<rdfs:subClassOf rdf:resource="#User"/> 
+</rdfs:Class>
 
 <rdfs:Property rdf:about="#Content">
 	<rdfs:domain rdf:resource="#Tweet"/>
-</rdfs>
+</rdfs:Property>
 
 <rdfs:Property rdf:about="#UserAccount">
 	<rdfs:domain rdf:resource="#User"/>
-</rdfs>
+</rdfs:Property>
 
 <rdfs:Property rdf:about="#Creator">
 	<rdfs:domain rdf:resource="#Tweet"/>
-</rdfs>
+</rdfs:Property>
 
 <Tweet rdf:about="http://www.example.com/myprimerrdf#tweet111">
 	<Content>Tweet de prueba</Content>
