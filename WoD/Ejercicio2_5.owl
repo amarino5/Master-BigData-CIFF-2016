@@ -16,12 +16,25 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      ontologyIRI="http://www.semanticweb.org/alberto/ontologies/2016/5/untitled-ontology-2">
-    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
-    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
-    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <Class IRI="#canal"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#empresa"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#entidad"/>
+    </Declaration>
     <Declaration>
         <Class IRI="#facebookUser"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#persona"/>
     </Declaration>
     <Declaration>
         <Class IRI="#post"/>
@@ -48,7 +61,10 @@
         <ObjectProperty IRI="#friends"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#userAccount"/>
+        <ObjectProperty IRI="#posts"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#representado"/>
     </Declaration>
     <Declaration>
         <DataProperty IRI="#content"/>
@@ -66,7 +82,13 @@
         <DataProperty IRI="#userAccount"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#Joaquín_Sabina"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="#fb101"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#p301"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#tweet111"/>
@@ -81,8 +103,16 @@
         <NamedIndividual IRI="#user211"/>
     </Declaration>
     <SubClassOf>
+        <Class IRI="#empresa"/>
+        <Class IRI="#entidad"/>
+    </SubClassOf>
+    <SubClassOf>
         <Class IRI="#facebookUser"/>
         <Class IRI="#user"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#persona"/>
+        <Class IRI="#entidad"/>
     </SubClassOf>
     <SubClassOf>
         <Class IRI="#publicacion"/>
@@ -97,8 +127,16 @@
         <Class IRI="#user"/>
     </SubClassOf>
     <ClassAssertion>
+        <Class IRI="#persona"/>
+        <NamedIndividual IRI="#Joaquín_Sabina"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="#publicacion"/>
         <NamedIndividual IRI="#fb101"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#canal"/>
+        <NamedIndividual IRI="#p301"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#tweet"/>
@@ -120,6 +158,21 @@
         <ObjectProperty IRI="#creator"/>
         <NamedIndividual IRI="#fb101"/>
         <NamedIndividual IRI="#user201"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#posts"/>
+        <NamedIndividual IRI="#p301"/>
+        <NamedIndividual IRI="#fb101"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#posts"/>
+        <NamedIndividual IRI="#p301"/>
+        <NamedIndividual IRI="#tweet111"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#representado"/>
+        <NamedIndividual IRI="#p301"/>
+        <NamedIndividual IRI="#Joaquín_Sabina"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="#creator"/>
@@ -139,12 +192,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="#creation_date"/>
         <NamedIndividual IRI="#fb101"/>
-        <Literal datatypeIRI="&rdf;PlainLiteral"> 12/02/2015</Literal>
+        <Literal datatypeIRI="&rdf;PlainLiteral">2015-02-12T23:34:45</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="#likes"/>
         <NamedIndividual IRI="#fb101"/>
-        <Literal datatypeIRI="&rdf;PlainLiteral">123</Literal>
+        <Literal datatypeIRI="&xsd;integer">123</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="#content"/>
@@ -154,7 +207,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="#creation_date"/>
         <NamedIndividual IRI="#tweet111"/>
-        <Literal datatypeIRI="&rdf;PlainLiteral">12/03/2015</Literal>
+        <Literal datatypeIRI="&rdf;PlainLiteral">2015-03-12T23:34:45</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="#userAccount"/>
@@ -183,6 +236,14 @@
         <ObjectProperty IRI="#friends"/>
         <Class IRI="#facebookUser"/>
     </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#posts"/>
+        <Class IRI="#canal"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#representado"/>
+        <Class IRI="#canal"/>
+    </ObjectPropertyDomain>
     <ObjectPropertyRange>
         <ObjectProperty IRI="#creator"/>
         <Class IRI="#user"/>
@@ -194,6 +255,14 @@
     <ObjectPropertyRange>
         <ObjectProperty IRI="#friends"/>
         <Class IRI="#facebookUser"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#posts"/>
+        <Class IRI="#post"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#representado"/>
+        <Class IRI="#entidad"/>
     </ObjectPropertyRange>
     <DataPropertyDomain>
         <DataProperty IRI="#content"/>
