@@ -47,17 +47,13 @@ def getDBpediaResource (label, lang, endpoint):
 	sparqlDBPedia.setReturnFormat(JSON)
 	query   = sparqlDBPedia.query()
 	results = query.convert()
-	print results
+	#print results
 	for result in results["results"]["bindings"]:
 		resource = result["s"]["value"]
 		print "The resource: " + resource
 
 def getLinkedmdbResource (label, lang, endpoint):
 	
-	print "->Ejecucion con : " + label 
-	if (lang):
-		print "->Ejecucion con : " + lang 
-
 	sparqlLinkedmdb = SPARQLWrapper(endpoint)
 
 	if (lang):
@@ -65,7 +61,7 @@ def getLinkedmdbResource (label, lang, endpoint):
 	        		
 	
 	else:
-		queryString = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX movie: <http://data.linkedmdb.org/resource/movie/> SELECT ?s WHERE { ?s rdfs:label \"" + label + "\"" "} "  
+		queryString = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX movie: <http://data.linkedmdb.org/resource/movie/> SELECT ?resource WHERE { ?resource rdfs:label \"" + label + "\"" "} "  
 	
 	sparqlLinkedmdb.setQuery(queryString)
 	sparqlLinkedmdb.setReturnFormat(JSON)
@@ -73,7 +69,7 @@ def getLinkedmdbResource (label, lang, endpoint):
 	results = query.convert()
 	print results
 	for result in results["results"]["bindings"]:
-		resource = result["s"]["value"]
+		resource = result["resource"]["value"]
 		print "->The resource: " + resource
 		
 
@@ -85,13 +81,12 @@ def getWebenemasunoResource (label, lang, endpoint):
 		
 	else:
 		queryString = "PREFIX sioc:<http://rdfs.org/sioc/ns#> PREFIX opmopviajero:<http://webenemasuno.linkeddata.es/ontology/OPMO/> SELECT ?resource WHERE {?resource sioc:title \"" + label + "\"} "
-		print queryString
-
+		
 	sparqlWebenemasuno.setQuery(queryString)
 	sparqlWebenemasuno.setReturnFormat(JSON)
 	query   = sparqlWebenemasuno.query()
 	results = query.convert()
-	print results
+	#print results
 	for result in results["results"]["bindings"]:
 		resource = result["resource"]["value"]
 		print "->The resource: " + resource
@@ -110,6 +105,14 @@ if __name__ == '__main__':
 
 	print "\n---------------------\n"
 
+	# Descomentar las siguientes lineas y modificar en cada 
+	lista = getLocalLabel("instancia3");
+	print "\n---Lista de resultados obtenidos de la INSTANCIA3---\n"
+	print lista
+	endpoint = 'http://data.linkedmdb.org/sparql';
+	for result in lista:
+		(label, lang) = result
+		resource = getLinkedmdbResource (label, lang, endpoint);
 
 	print "\n----------------------\n"
 
@@ -122,15 +125,7 @@ if __name__ == '__main__':
 
 	print "\n----------------------\n"
 
-	# Descomentar las siguientes lineas y modificar en cada 
-	lista = getLocalLabel("instancia3");
-	print "\n---Lista de resultados obtenidos de la INSTANCIA3---\n"
-	print lista
-	endpoint = 'http://data.linkedmdb.org/sparql';
-	for result in lista:
-		(label, lang) = result
-		resource = getLinkedmdbResource (label, lang, endpoint);
-
+	
 	print "\n----------------------\n"
 
 
