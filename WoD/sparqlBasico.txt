@@ -1,0 +1,36 @@
+#Ejercicio 4_1: SELECT. Dame aquellas personas que tengan nombre
+#y email (grafo personas) → Similar Query4
+
+SELECT ?s
+{ 
+    ?s foaf:name ?o. ?s foaf:mbox ?e
+}
+
+
+#Ejercicio 4_2: OPTIONAL. Saca el nombre de las personas y si se
+#puede su email (grafo personas)
+
+SELECT ?o ?e
+{ 
+    ?s foaf:name ?o. ?s foaf:mbox ?e
+}
+
+
+#Ejercicio 4_3: FILTROS: Cuales son los países que tienen una
+#población superior a 40,000 habitantes (grafo países)
+
+SELECT  ?country
+WHERE   { ?country ex:poblacion ?pop
+    FILTER (?pop>'40000') 
+        }
+
+
+#Ejercicio 4_4: ASK y FILTERS: Crea una query para obtener la
+#población de Francia, la población de Canadá y preguntar “Tiene
+#mas población Francia que Canadá? (grafo países)
+
+ASK 
+    WHERE   { ex:France ex:poblacion ?popFran.
+  			  ex:Canada ex:poblacion ?popCan
+    FILTER (?popCan < ?popFran)
+         }

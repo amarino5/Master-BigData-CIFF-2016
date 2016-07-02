@@ -1,0 +1,10 @@
+SELECT ?duration
+FROM default
+FROM NAMED <http://example.org/film/g1>
+WHERE {
+	?s ex4:bestPicture ?name
+GRAPH ?graph1
+	{ ?film foaf:name ?name.
+	  ?film g1:duration ?duration}
+}
+

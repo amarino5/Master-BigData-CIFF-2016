@@ -1,0 +1,8 @@
+SELECT ?title
+WHERE {
+  ?book dc:title ?title .
+  ?book ex2:price ?price .
+}
+GROUP BY ?title
+HAVING (MAX(?price))
+
