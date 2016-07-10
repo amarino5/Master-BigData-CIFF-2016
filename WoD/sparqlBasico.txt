@@ -1,6 +1,9 @@
 #Ejercicio 4_1: SELECT. Dame aquellas personas que tengan nombre
 #y email (grafo personas) → Similar Query4
 
+PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 SELECT ?s
 { 
     ?s foaf:name ?o. ?s foaf:mbox ?e
@@ -10,15 +13,25 @@ SELECT ?s
 #Ejercicio 4_2: OPTIONAL. Saca el nombre de las personas y si se
 #puede su email (grafo personas)
 
-SELECT ?o ?e
-{ 
-    ?s foaf:name ?o. ?s foaf:mbox ?e
+PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT  ?name ?mail
+WHERE {
+  ?s foaf:name ?name .
+  OPTIONAL { ?s foaf:mbox ?mail}
 }
 
 
 #Ejercicio 4_3: FILTROS: Cuales son los países que tienen una
 #población superior a 40,000 habitantes (grafo países)
 
+PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/> 
+PREFIX ex: <http://example.org/country/> 
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> 
 SELECT  ?country
 WHERE   { ?country ex:poblacion ?pop
     FILTER (?pop>'40000') 
@@ -29,8 +42,46 @@ WHERE   { ?country ex:poblacion ?pop
 #población de Francia, la población de Canadá y preguntar “Tiene
 #mas población Francia que Canadá? (grafo países)
 
+PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/> 
+PREFIX ex: <http://example.org/country/> 
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> 
 ASK 
     WHERE   { ex:France ex:poblacion ?popFran.
   			  ex:Canada ex:poblacion ?popCan
     FILTER (?popCan < ?popFran)
          }
+
+
+
+#Ejercicio 4_5:Añade una nueva película al grafo por defecto
+
+PREFIX dc: <http://purl.org/dc/elements/1.1/> 
+PREFIX ex4:  <http://example.org/award/> 
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
+PREFIX foaf:  	<http://xmlns.com/foaf/0.1/> 
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX g1:  <http://example.org/film/g1/> 
+
+INSERT DATA{
+  GRAPH <http://example.org/film/g1> {  
+     g1:d foaf:name "La Milla Verde";
+           g1:duration "155" ;
+	       g1:country "United State" ;
+	       g1:music "Thomas Newman"  .
+  }}
+
+ #Elimina el grafo 1 (uri: http://example.org/film/g1 ) del dataset de award (clear graph) 
+
+PREFIX dc: <http://purl.org/dc/elements/1.1/> 
+PREFIX ex4:  <http://example.org/award/> 
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
+PREFIX foaf:  	<http://xmlns.com/foaf/0.1/> 
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX g1:  <http://example.org/film/g1/> 
+
+CLEAR GRAPH <http://example.org/film/g1> 
