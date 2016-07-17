@@ -27,17 +27,18 @@ ggplot(stack(diabetesdfwork), aes(x = ind, y = values)) +
 #media para las columnaslas que tienen SEX=F, utilizando la
 #funcion tapply
 #Paracada columna
-tapply(diabetesdfwork$AGE, diabetesdfwork$SEX=='M',mean)
-tapply(diabetesdfwork$BMI, diabetesdfwork$SEX=='M',mean)
-tapply(diabetesdfwork$BP, diabetesdfwork$SEX=='M',mean)
-tapply(diabetesdfwork$S1, diabetesdfwork$SEX=='M',mean)
-tapply(diabetesdfwork$S2, diabetesdfwork$SEX=='M',mean)
-tapply(diabetesdfwork$S3, diabetesdfwork$SEX=='M',mean)
-tapply(diabetesdfwork$S4, diabetesdfwork$SEX=='M',mean)
-tapply(diabetesdfwork$S5, diabetesdfwork$SEX=='M',mean)
-tapply(diabetesdfwork$S6, diabetesdfwork$SEX=='M',mean)
-#Para todas las columnas
-tapply(diabetesdfwork[,1],diabetesdfwork$SEX, mean)
+
+vectorSex <- c("F","M")
+dfSex <- data.frame(vectorSex)
+for (i in 1:ncol(diabetesdfwork)) {
+  if (is.numeric(diabetesdfwork[[i]])){
+    temp <- tapply(diabetesdfwork[[i]],diabetesdfwork$SEX,mean )
+    tempdf <- data.frame(temp)
+    names(tempdf)[1] <- names(diabetesdfwork)[i]
+    dfSex <- cbind(dfSex,tempdf[1])
+  }
+}
+head(dfSex)
 
 #Calcular la correlacion de todas las variables numericas con
 #la variable Y
@@ -80,20 +81,12 @@ outliersf <- function(dataframe){
 }
 
 #Limpiamos el dataset con el MAD
-medianas<-lapply(diabetesdfwork,median)
-mads<-lapply(diabetesdfwork, mad)
-vec_out_inf<-c() #vamos a guardar los límites inferiores para considerar outliers
-vec_out_sup<-c() #vamos a guardar los límites superiores para considerar outliers
-for (i in 1:length(medianas)){
-   vec_out_sup[i]<-medianas[[i]]+ (3*(mads[[i]]))
-   vec_out_inf[i]<-medianas[[i]]- (3*(mads[[i]]))
-   }
-# Eliminamos los registros que tienen alguna variable con valor superior o inferior a los valores tomados como límite de outliers
-diabetes_sin_out<-diabetesdfwork
-for (i in 1:length(diabetes_sin_out[1,])){
-   if(mads[[i]]>0){  
-   diabetes_sin_out<-subset(diabetes_sin_out, diabetes_sin_out[,i]>=vec_out_inf[i] & diabetes_sin_out[,i]<=vec_out_sup[i])
-   }
+for (col in colnames(diabdfcategorical[,-2])) { #Como la columna sexo es categorica no la contamos
+  indBajo <- mean(diabdfcategorical[[col]])-(3*mad(diabdfcategorical[[col]]))
+  indSuperior <- mean(diabdfcategorical[[col]])+(3*mad(diabdfcategorical[[col]]))
+  Outlier <- diabdfcategorical[ (diabdfcategorical[[col]]<indBajo) | (diabdfcategorical[[col]]> indSuperior) ,] 
+  diabdfcategorical[ (diabdfcategorical[[col]]<indBajo) | (diabdfcategorical[[col]]> indSuperior) ,] <- NA
+  diabdfcategorical <- na.omit( diabdfcategorical )
 }
 
 #separar los datasets en dos fragmentos
@@ -103,22 +96,17 @@ indices<-sample(1:nrow(diabdfcategorical),nrow(diabdfcategorical)*30/100)
 test<-diabdfcategorical[indices,]
 
 #escalar los datos para que tenga media cero y varianza 1
-escale_dataset<-function(dataframe){
-  columns<-colnames(dataframe)
-  for (xcol in columns) {
-    newdataframe<-apply(dataframe,c(1,2),function(x,y) (x-mean(y))/sd(y),y=xcol )
-  }
-  
-  return(newdataframe)
-}
-#escalar los datos para que tenga media cero y varianza 1
 scaled<-scale(train)
 head(diabetesdf)
 
 #Realizar un modelo de regresion lineal de la variable de respuesta sobre el resto y ajustarlo por #minimos cuadrados usando unicamente los datos del conjunto de entrenamiento.
-l_regr<-lm(Y~AGE+SEX+BMI+BP+S1+S2+S3+S4+S5+S6, data=train)
-Y<- predict(l_regr)
+regresion_train<-lm(Y~AGE+SEX+BMI+BP+S1+S2+S3+S4+S5+S6, data=train)
+YPredicttrain<- predict(regresion_train)
 
 #Calcular el error cuadratico medio de los datos del conjunto de entrenamiento y de los datos del #conjunto de test
-err_cuad_medio<-(sum((train$Y-Y_esperado)^2))/dim(train)[1]
+ecmtrain=(mean(train$Y-YPredicttrain))^2
+
+regresion_test <- lm(Y ~ AGE + SEX + BMI + BP + S1 + S2 + S3 + S4+ S5 + S6, data=test)
+YPredictTest=predict(regresion_test)
+ecmtest=(mean(test$Y-YPredictTest))^2
 
