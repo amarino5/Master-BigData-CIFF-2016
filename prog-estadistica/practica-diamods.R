@@ -69,27 +69,64 @@ ExploratoryAnalysis <- function ( data ){
   #analisis de los datos para la normalidad 
   plot(density(data))
   qqnorm(data)
+  print(shapiro.test(sample(data,5000,rep=F)))
  
   par(mfrow=c(1,1))
 }
 
 ExploratoryAnalysis(diamonds$carat)
 #############################
-# $ carat  : num  :variable numerica. Parece que los valores siguen una distribucion normal, ya que
-#la mediana esta centrada, pero tiene muchos valores fuera del tercer cuartil, por lo que pueden 
-#o bien considerarse outliers, o darles un tratamiento distinto:(DUDA?)
+# $ carat  : num  :variable numerica. 
+# Tiene muchos valores fuera del tercer cuartil, por lo que pueden o bien considerarse outliers, o darles un tratamiento distinto:(DUDA?)
+# El boxplot se ven esos valores fuera del tercer cuartil
+# El histograma muestra que la distribución no esta centrada, sino que contiene un numero mayor de ocurrencias al inciio
+# El test de shapiro confirma la no normalidad debido al p-valor por debajo de 0,05
 #############################
 ExploratoryAnalysis(diamonds$cut)
-
 #############################
-# $ cut    : Ord.factor w/ 5 levels: Factor con 5 niveles. Parece que la distribucion del tipo de corte
-#esta centrada y entre los valores 3 y 5
+# $ cut  :factor de 5 niveles. 
+# Se aprecia en el boxplot como en el histograma que la mayoria de valores están entre el tipo de corte 3 y 5
+# El test de shapiro confirma la no normalidad debido al p-valor por debajo de 0,05
 #############################
 ExploratoryAnalysis(diamonds$color)
+#############################
+# $ color  :factor de 7 niveles. 
+# Se aprecia en el boxplot como la mediana esta en torno a 4 y que no esta centrada la distribucion de valores
+# El histograma muestra como están muy repartidos entre los 5 primeros
+# El test de shapiro confirma la no normalidad debido al p-valor por debajo de 0,05
+#############################
+
 ExploratoryAnalysis(diamonds$clarity)
+#############################
+# $ clarity  :factor de 8 niveles. 
+# Se aprecia en el boxplot como la mediana está centrada en 4 y los cuartiles estan cerca, con lo cual la mayoria de los valores se centran en torno a 4
+# El test de shapiro confirma la no normalidad debido al p-valor por debajo de 0,05
+#############################
+
 ExploratoryAnalysis(diamonds$depth)
+#############################
+# $ depth  :num variable numerica continua 
+# El diagrama de boxplot es un poco extraño porque se aprecian muchos valores fuera de los cuartiles
+# Sin embargo en el histograma y el diagrama de densidad parace que la variable tiene cierta normalidad
+# con un apuntamiento muy pronunciado. Sin embargo, el test de shapiro confirma la no normalidad debido al p-valor por debajo de 0,05
+#############################
+
 ExploratoryAnalysis(diamonds$table)
+#############################
+# $ table  :num variable numerica continua 
+# El diagrama de boxplot es un poco extraño porque se aprecian muchos valores fuera de los cuartiles
+# Sin embargo en el histograma y el diagrama de densidad parace que la variable tiene cierta normalidad con la mayoria de valores en torno a 50-60
+# El test de shapiro confirma la no normalidad debido al p-valor por debajo de 0,05
+#############################
+
 ExploratoryAnalysis(diamonds$price)
+#############################
+# $ price  :num variable numerica continua 
+# El boxplot muestra muchos outliers por encima de 15000. Quizas al ser tantos, esta muestra deberia ser tratada de manera diferente al del resto de la mestra, sobre todo si es la variable que queremos predecir
+# El histograma muestra un decrecimiento, y una asimetría hacia a la izquierda (o inicio del histograma)
+# El test de shapiro confirma la no normalidad debido al p-valor por debajo de 0,05
+#############################
+
 ExploratoryAnalysis(diamonds$x)
 ExploratoryAnalysis(diamonds$y)
 ExploratoryAnalysis(diamonds$z)
@@ -99,33 +136,82 @@ ExploratoryAnalysis(diamonds$z)
 #Tal como revisamos anteriormente, hay variables que tienen muchos valores fuera del rango intercuartilico
 #al ser tantos valores, lo ideal seria partir en dos muestras (los que estan en rango) y los que estan
 #fuera del rango y hacer los mismos pasos de tratamiento de análisis en subgrupos distintos.
+IQROutliers <- function(data) {
+  q1 <- quantile(data, 0.25)
+  q3 <- quantile(data, 0.75)
+  iqr <- q3 - q1
+  # Estremos inferiori y superior
+  extremoMin <- q1 - (iqr * 1.5)
+  extremoMax <- (iqr * 1.5) + q3
+  result <- which(data > extremoMax | data < extremoMin)
+}
 
-#Como primer paso, eliminamos los valores a 0 de las variables X;Y;Z porque no tiene sentido que 
-#esas medidas estén a 0. Otra solución podría ser establecerlos a la media, o bien de la variable 
-#o bien de los estratos seleccionados 
+maxOut <- function (data) {
+  q1 <- quantile(data, 0.25)
+  q3 <- quantile(data, 0.75)
+  iqr <- q3 - q1
+  extremoMax <- (iqr * 1.5) + q3
+}
 
-diamonds_clean<-diamonds[diamonds$x>0 & diamonds$y>0 & diamonds$z>0,]
+minOut <- function (data) {
+  q1 <- quantile(data, 0.25)
+  q3 <- quantile(data, 0.75)
+  iqr <- q3 - q1
+  extremoMin <- q1 - (iqr * 1.5)
+}
+#Para aquellas variables cuantitativas, calculamos el porcentaje de outliers por si queremos poner
+#algun umbral que demuestre que es significativo el numero. Filtramos los datos dentro de los rangos
+#y substituimos las variables del dataset. Lo hacemos para todas. 
+outliers <- IQROutliers(diamonds$price)
+cat("El porcentaje de outliers de la variable %price% es:",length(outliers)/length(diamonds$price))
+dtClean <- diamonds
+dtClean <-dtClean[dtClean$price<maxOut(diamonds$price),]
+dtClean <-dtClean[dtClean$price>minOut(diamonds$price),]
+summary(dtClean)
+nrow(dtClean)
+outliers <- IQROutliers(diamonds$carat)
+cat("El porcentaje de outliers de la variable %carat% es:",length(outliers)/length(diamonds$carat))
+dtClean <-dtClean[dtClean$carat<maxOut(diamonds$carat),]
+dtClean <-dtClean[dtClean$carat>minOut(diamonds$carat),]
+summary(dtClean)
+nrow(dtClean)
+outliers <- IQROutliers(diamonds$depth)
+cat("El porcentaje de outliers de la variable %depth% es:",length(outliers)/length(diamonds$depth))
+dtClean <-dtClean[dtClean$depth<maxOut(diamonds$depth),]
+dtClean <-dtClean[dtClean$depth>minOut(diamonds$depth),]
+summary(dtClean)
+nrow(dtClean)
 
-# Comprobamos la cantidad de outliers:
-out_carat=c(quantile(diamonds$carat,.25)-1.5*IQR(diamonds$carat), quantile(diamonds$carat,.75)+1.5*IQR(diamonds$carat))
-out_depth= c(quantile(diamonds$carat,.25)-1.5*IQR(diamonds$depth), quantile(diamonds$depth,.75)+1.5*IQR(diamonds$depth))
-out_table= c(quantile(diamonds$table,.25)-1.5*IQR(diamonds$table), quantile(diamonds$table,.75)+1.5*IQR(diamonds$table))
-out_price= c(quantile(diamonds$price,.25)-1.5*IQR(diamonds$price), quantile(diamonds$price,.75)+1.5*IQR(diamonds$price))
-out_x = c(quantile(diamonds$x,.25)-1.5*IQR(diamonds$x), quantile(diamonds$x,.75)+1.5*IQR(diamonds$x))
-out_y = c(quantile(diamonds$y,.25)-1.5*IQR(diamonds$y), quantile(diamonds$y,.75)+1.5*IQR(diamonds$y))
-out_z = c(quantile(diamonds$z,.25)-1.5*IQR(diamonds$z), quantile(diamonds$z,.75)+1.5*IQR(diamonds$z))
-out<- rbind(out_carat, out_depth, out_table, out_price, out_x, out_y, out_z)
+outliers <- IQROutliers(diamonds$table)
+cat("El porcentaje de outliers de la variable %table% es:",length(outliers)/length(diamonds$table))
+dtClean <-dtClean[dtClean$table<maxOut(diamonds$table),]
+dtClean <-dtClean[dtClean$table>minOut(diamonds$table),]
+summary(dtClean)
+nrow(dtClean)
 
-dt_sinOut<-diamonds[diamonds$carat>out[1,1] & diamonds$carat<out[1,2],]
-dt_sinOut<-dt_sinOut[dt_sinOut$depth>out[2,1] & dt_sinOut$depth<out[2,2],]
-dt_sinOut<-dt_sinOut[dt_sinOut$table>out[3,1] & dt_sinOut$table<out[3,2],]
-dt_sinOut<-dt_sinOut[dt_sinOut$price>out[4,1] & dt_sinOut$price<out[4,2],]
-dt_sinOut<-dt_sinOut[dt_sinOut$x>out[5,1] & dt_sinOut$x<out[5,2],]
-dt_sinOut<-dt_sinOut[dt_sinOut$y>out[6,1] & dt_sinOut$y<out[6,2],]
-dt_sinOut<-dt_sinOut[dt_sinOut$z>out[7,1] & dt_sinOut$z<out[7,2],]
-#comprobamos el porcentaje de datos que hemos eliminado
-porcent=(dim(dt_sinOut)[1]*100)/dim(diamonds)[1] # eliminando los outliers mantenemos el 90.23% de la poblacion. Seguiremos los análisis con este nuevo data set.
-diamondsdf<-dt_sinOut
+outliers <- IQROutliers(diamonds$x)
+cat("El porcentaje de outliers de la variable %x% es:",length(outliers)/length(diamonds$x))
+dtClean <-dtClean[dtClean$x<maxOut(diamonds$x),]
+dtClean <-dtClean[dtClean$x>minOut(diamonds$x),]
+summary(dtClean)
+nrow(dtClean)
+
+outliers <- IQROutliers(diamonds$y)
+cat("El porcentaje de outliers de la variable %y% es:",length(outliers)/length(diamonds$y))
+dtClean <-dtClean[dtClean$y<maxOut(diamonds$y),]
+dtClean <-dtClean[dtClean$y>minOut(diamonds$y),]
+summary(dtClean)
+nrow(dtClean)
+
+outliers <- IQROutliers(diamonds$z)
+cat("El porcentaje de outliers de la variable %z% es:",length(outliers)/length(diamonds$z))
+dtClean <-dtClean[dtClean$z<maxOut(diamonds$z),]
+dtClean <-dtClean[dtClean$z>minOut(diamonds$z),]
+summary(dtClean)
+nrow(dtClean)
+
+#Finalmente hemos limpiado el dataset en unos 6000 registros
+diamondsdf<-dtClean
 
 #Inferencia
 # Calcula un intervalo de confianza para la media de "carat" y "depth"
@@ -280,39 +366,113 @@ parcor(cov(diamondsdfcor))
 # Formular un modelo de regresi?n y analiza los resultados
 ####################
 #  Intentaremos estimar el precio del diamante en mercado en funcion del resto de variables, viendo cual aporta mas a la variable dependiente
+#  Empezaremos por aquella variable con mayor gradiente de correlacion parcial, que es carat con un 0.66
 ####################
 attach(diamondsdf)
-rg <- lm(price~carat+clarityNum+colorNum, data=diamondsdf)
-summary(rg)
+rg0 <- lm(price~carat, data=diamondsdf)
+summary(rg0)
 # Muestra los residuos y analiza los resultados
-summary(rg)$r.squared
-summary(rg)$adj.r.squared
-summary(rg)$coeff
+summary(rg0)$r.squared
+summary(rg0)$adj.r.squared
+summary(rg0)$coeff
+#En este caso, el R2 y el ajustado son similares puesto que solo trabajamos con una variable. 
+#Explicamos el 85% de los datos ajustandose al modelo, no está mal pero vamos a seguir incluyendo variables para
+#ver si mejora, con la siguiente variable que sería la claridad
+rg1 <- lm(price~carat+clarityNum, data=diamondsdf)
+summary(rg1)
+# Muestra los residuos y analiza los resultados
+summary(rg1)$r.squared
+summary(rg1)$adj.r.squared
+summary(rg1)$coeff
+#De nuevo mejora R2 con un p-valor muy bajo, lo que rechazamos la hipotesis nula de que los coeficientes
+#son iguales a cero y explicamos en este caso un 89% de los casos ajustados al modelo
+#Incluimos el color
+
+rg2 <- lm(price~carat+clarityNum+colorNum, data=diamondsdf)
+summary(rg2)
+# Muestra los residuos y analiza los resultados
+summary(rg2)$r.squared
+summary(rg2)$adj.r.squared
+summary(rg2)$coeff
 
 ####################
+#Probamos con una nueva variable mas para ver si ajusta mejor
+rg3 <- lm(price~carat+clarityNum+colorNum+x, data=diamondsdf)
+summary(rg3)
+# Muestra los residuos y analiza los resultados
+summary(rg3)$r.squared
+summary(rg3)$adj.r.squared
+summary(rg3)$coeff
+# 
 # Residuals:
 #   Min      1Q  Median      3Q     Max 
-# -6085.6  -503.8  -134.2   407.6  4909.3 
+# -6783.5  -459.4   -94.8   354.4  5061.2 
 # 
 # Coefficients:
-#   Estimate Std. Error t value Pr(>|t|)    
-# (Intercept) -3225.924     15.702 -205.44   <2e-16 ***
-#   carat        7749.755     11.352  682.66   <2e-16 ***
-#   clarityNum    401.371      2.473  162.29   <2e-16 ***
-#   colorNum     -231.378      2.329  -99.33   <2e-16 ***
+#   Estimate Std. Error  t value Pr(>|t|)    
+# (Intercept)   502.077     88.004    5.705 1.17e-08 ***
+#   carat       10312.625     60.598  170.180  < 2e-16 ***
+#   clarityNum    389.429      2.443  159.393  < 2e-16 ***
+#   colorNum     -241.240      2.298 -104.984  < 2e-16 ***
+#   x            -983.514     22.858  -43.026  < 2e-16 ***
 #   ---
 #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 # 
-# Residual standard error: 824.9 on 48667 degrees of freedom
-# Multiple R-squared:  0.9095,	Adjusted R-squared:  0.9095 
-# F-statistic: 1.63e+05 on 3 and 48667 DF,  p-value: < 2.2e-16
+# Residual standard error: 809.6 on 48666 degrees of freedom
+# Multiple R-squared:  0.9128,	Adjusted R-squared:  0.9128 
+# F-statistic: 1.273e+05 on 4 and 48666 DF,  p-value: < 2.2e-16
+
+rg4 <- lm(price~carat+clarityNum+colorNum+x+cutNum, data=diamondsdf)
+summary(rg4)
+# Muestra los residuos y analiza los resultados
+summary(rg4)$r.squared
+summary(rg4)$adj.r.squared
+summary(rg4)$coeff
+# Coefficients:
+#   Estimate Std. Error  t value Pr(>|t|)    
+# (Intercept)   346.856     87.639    3.958 7.58e-05 ***
+#   carat       10464.648     60.496  172.981  < 2e-16 ***
+#   clarityNum    380.973      2.450  155.512  < 2e-16 ***
+#   colorNum     -242.102      2.283 -106.045  < 2e-16 ***
+#   x           -1033.792     22.794  -45.354  < 2e-16 ***
+#   cutNum         91.376      3.593   25.434  < 2e-16 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# Residual standard error: 804.3 on 48665 degrees of freedom
+# Multiple R-squared:  0.9139,	Adjusted R-squared:  0.9139 
+# F-statistic: 1.033e+05 on 5 and 48665 DF,  p-value: < 2.2e-16
+
+rg5 <- lm(price~carat+clarityNum+colorNum+x+cutNum+depth, data=diamondsdf)
+summary(rg5)
+# Muestra los residuos y analiza los resultados
+summary(rg5)$r.squared
+summary(rg5)$adj.r.squared
+summary(rg5)$coeff
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  2885.247    238.320   12.11   <2e-16 ***
+#   carat       10689.647     63.530  168.26   <2e-16 ***
+#   clarityNum    379.006      2.453  154.53   <2e-16 ***
+#   colorNum     -241.568      2.280 -105.93   <2e-16 ***
+#   x           -1121.666     24.022  -46.69   <2e-16 ***
+#   cutNum         86.884      3.609   24.07   <2e-16 ***
+#   depth         -35.432      3.094  -11.45   <2e-16 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# Residual standard error: 803.2 on 48664 degrees of freedom
+# Multiple R-squared:  0.9142,	Adjusted R-squared:  0.9141 
+# F-statistic: 8.637e+04 on 6 and 48664 DF,  p-value: < 2.2e-16
 
 #El R-squared ajustado es el que hay que revisar al ser un modelo de regresion lineal multiple. 
-#Puesto que esta en 0.9 es muy elevadopor lo que el modelo parece que se ajusta bastante bien
+#A partir del modelo rg3  esta por encima de 0.9 es muy elevadopor lo que el modelo parece que se ajusta bastante bien
 #El p-valor esta muy por debajo de 0,05 por lo tanto corrobora la bodad de ajuste.
-#las tres varibles seleccionadas en el modelo parecen aportar bastante al modelo por los niveles de significacion.
-####################
-plot(resid(rg))
+#Las dos ultimas variables, a pesar de que mejoran el modelo en muy poco, este aumento no es significativo.
+#Podríamos obviar el incluir las variables cutNum y depth ya que apenas aportan al modelo y lo hacen computacionalente mas pesado
+
+
+plot(resid(rg3))
 abline(0,0,col="red")
 ####################
 #La grafica demuestra heterocedasteidad, es decir que el modelo no se ajusta a la distribucion normal
