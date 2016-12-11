@@ -14,7 +14,11 @@
 #--------------------------------------------------------------------------------------------
 # Inicializamos el dataset
 #--------------------------------------------------------------------------------------------
-
+if (!require("caTools")){
+  install.packages("caTools") 
+  library(MASS)
+}
+setwd("C:\\Desarrollo\\repos\\Master-BigData-CIFF-2016\\analisis estadístico\\Practica1")
 data=read.csv("house_train.csv",stringsAsFactors = FALSE)
 
 #--------------------------------------------------------------------------------------------
@@ -60,8 +64,8 @@ summary(houses)
 #--------------------------------------------------------------------------------------------
 # Dividimos entre train y test, ya que el segundo fichero de la práctica no da datos de precios
 #--------------------------------------------------------------------------------------------
-
-sample = sample.split(houses$price, SplitRatio = 0.5)
+library(MASS)
+SAMPLE = sample.split(houses$price, SplitRatio = 0.5)
 house_train = subset(houses, SAMPLE == TRUE)
 house_test = subset(houses, SAMPLE == FALSE)
 

@@ -1,0 +1,45 @@
+---
+title: "ExperimentoEnSupermercado"
+author: "AlbertoMarino"
+date: "11 de diciembre de 2016"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Enunciado
+
+En una cadena de supermercados con presencia en todas las provincias de España se está planteando eliminar la publicidad de la puerta del supermercado.
+
+Para valorar esta medida se necesita conocer el aporte en las ventas debido a la publicidad de la puerta. Esta valoración se quiere hacer mediante un experimento utilizando un producto concreto: leche desnatada de su propia marca.
+
+Su misión es decidir la metodología del experimento que permitirá cuantificar el aporte de la publicidad en las ventas.
+
+El entregable es un documento con la metodología que debe incluir la estrategia de publicidad, la información a capturar y la técnica a utilizar para la medición.
+
+## Diseño del experimento
+
+Para decidir el tipo de experimento podemos responder a las siguientes preguntas:
+
+* Existe control del factor de estudio?
+  Considerando la distribucion de la población normal, y seleccionando un conjunto de supermercados donde se va a aplicar el experimento, dentro del conjunto total, presuponemos el grupo de control el conjunto de supermercados que mantienen la publicidad.
+  Es por tanto un estudio experimental
+  
+* Existe un grupo de control concurrente?
+  Así es, en el timpo y en la forma.
+  Es por tanto, un ensayo controlado.
+
+* la asignación a los grupos es aleatoria?
+  No, escogeremos los supermercados a eliminar la publicidad con una afluencia de gente similar. 
+  
+NOTA: Estas decisiones son tomadas, porque si escogemos realizar el experimento con la poblacion de un solo supermercado, dependería de muchos factores: situacion de la publicidad, caminos que recorren los clientes, etc...seleccionando dos supermercados cuya afluencia de publico y ventas de leche sea estacionario en el tiempo, pueden servirnos de caso de control. 
+
+Por tanto:
+   --Se decide que la metodología se un Caso-Control longitudinal (es decir, durante un periodo de tiempo)
+   --La seleccion de supermercados es la anteriormente mencionada
+   --Los datos a recoger, son el numero de compradores, la frecuencia, y la cantidad total de leche a medir.
+   --Mediante los supermercados de control, podrá observarse si hay impactos en las ventas mediante la publicidad en ese periodo de tiempo.
