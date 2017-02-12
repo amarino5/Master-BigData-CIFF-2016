@@ -324,4 +324,27 @@ MAE_RLM
 #    modelo estable.
 #--------------------------------------------------------------------------------------------
  
-
+#-------------utilizamos el modelo robusto 6 para generar la prediccion de precio-------
+test_data=read.csv("house_test.csv",stringsAsFactors = FALSE)
+head(test_data)
+#--------------------------------------------------------------------------------------------
+# Aplicamos las mismas transformaciones y slicing para predecir con el modelo
+#--------------------------------------------------------------------------------------------
+test_data$date= as.Date(substr(test_data$date, 0, 8), "%Y%m%d")
+test_data$date = as.factor(format(test_data$date,'%Y'))
+test_data$zipcode = as.factor(test_data$zipcode)
+test_data$yr_renovated = as.factor(test_data$yr_renovated)
+test_data$yr_built = as.factor(test_data$yr_built)
+test_data$condition = as.factor(test_data$condition)
+test_data$floors = as.factor(test_data$floors)
+test_data$bathrooms = as.factor(test_data$bathrooms)
+test_data$bedrooms = as.factor(test_data$bedrooms)
+test_data$view = as.factor(test_data$view)
+test_data$waterfront = as.factor(test_data$waterfront)
+unique(test_data$grade)
+test_data$grade = as.factor(test_data$grade)
+#seleccionamos pues las variables que consideramos optimas
+test_houses = subset(test_data, select=c("date","bedrooms","sqft_living","sqft_lot","floors","waterfront","view","condition","grade","sqft_above","sqft_basement","yr_built","yr_renovated","zipcode","sqft_living15","sqft_lot15"))
+test_houses$price=predict(modelo6,newdata=test_houses,type="response")
+head(test_houses)
+write.table(test_houses, file = "house_test_ptedictions.csv", sep = ",", col.names = NA)
