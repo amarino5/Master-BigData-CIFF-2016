@@ -95,6 +95,8 @@ print "list_of_inputs_for_model4 = ", list_of_inputs_for_model4
 def predict0(uuid):
     content = request.json
     df_request = pd.read_json(content, typ='series', orient='split')
+
+
     target_variable = 'BB_1YR_DEFAULT_PROB_CQ4_2015'
     identifier = 'TICKER'
     list_continuous_PD = [col for col in list(df) if (col.startswith('BB_1YR_DEFAULT_PROB'))]
@@ -132,34 +134,21 @@ def predict0(uuid):
             media = df_modelo0[var].mean()
             stdev = df_modelo0[var].std()
             df_modelo0[var] = (df_modelo0[var] - media) / stdev
+
     # Realizadas todas las transformaciones, restringimos el df a ratios y PD para aplicar PCA
     list_of_inputs_for_model0_rev = [v for v in list_of_inputs_for_model0 if
                                  (v.startswith('r') | v.startswith('BB_1YR_DEFAULT_PROB'))]
 
-    pca = PCA()
-    df_pca = pca.fit_transform(df_modelo0)
+    df_modeloFinal = df_modelo0[list_of_inputs_for_model0_rev]
 
-    variance = pca.explained_variance_ratio_.cumsum()
-
-    for i in range(0, len(df_modelo0.columns)):
-        var_explained = variance[i:i + 1]
-        if var_explained >= 0.90:
-            print ("Numero de Componentes", i, var_explained)
-            pca = PCA(n_components=i)
-            df_0pca = pca.fit_transform(df_modelo0)
-
-    pca = PCA(n_components=40)
-    pca = pca.fit(df_modelo0)
-    df2 = pca.transform(df_modelo0)
-    df_pca2 = pd.DataFrame(df2, columns=range(pca.n_components_))
-
-    # Convertir a un nuevo dataframe
-    df_pca = pd.DataFrame(data=df_pca[::], index=list(range(0, len(df))))
+    pca = PCA(n_components=len(df_modeloFinal))
+    df_pca = pca.fit_transform(df_modeloFinal)
+    df_pca0 = pd.DataFrame(data=df_pca[::])
 
     ####### Modelo 0#######
     try:
         rf = joblib.load('C:/Desarrollo/repos/Master-BigData-CIFF-2016/Tecnica de moleje y analisis/Balancesheet-PythonRF_model0.pkl')
-        myprediction0 = rf.predict(df_pca2)
+        myprediction0 = rf.predict(df_pca0)
     except np.linalg.linalg.LinAlgError as err:
         if 'Singular matrix' in err.message:
             print "MODEL-INVALID (Singular Matrix)"

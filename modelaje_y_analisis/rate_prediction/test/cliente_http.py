@@ -45,8 +45,8 @@ df2 = df[list_of_inputs_for_model2]
 df3 = df[list_of_inputs_for_model3]
 df4 = df[list_of_inputs_for_model4]
 
-PYTHONANYWHERE_URL = 'http://amarino.pythonanywhere.com'
-#PYTHONANYWHERE_URL= 'http://localhost:8080'
+#PYTHONANYWHERE_URL = 'http://amarino.pythonanywhere.com'
+PYTHONANYWHERE_URL= 'http://localhost:8080'
 
 for i in range(len(df)):
     print i
